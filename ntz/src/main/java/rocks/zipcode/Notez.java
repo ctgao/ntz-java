@@ -41,7 +41,7 @@ public final class Notez {
         // TESTING
 //        argv = "-r \"Another note\"".split(" ");
 //        argv = "-c \"note2\" \"testing Notes\"".split(" ");
-        argv = "-f \"note2\" 1".split(" ");
+//        argv = "-f \"note2\" 1".split(" ");
 
         if (argv.length == 0) { // there are no commandline arguments
             //just print the contents of the filemap.
@@ -107,11 +107,11 @@ public final class Notez {
      */
     private void removeFromCategory(String category, String[] argv) {
         // parse the argv first
-        String noteText = removeQuotes(parseNote(category, argv));
-        category = removeQuotes(category);
+//        category = removeQuotes(category);
+        int noteNumber = Integer.parseInt(argv[2]) - 1;
 
         // string is ready to be added to a note list
-        filemap.get(category).remove(noteText);
+        filemap.get(category).remove(noteNumber);
         if(filemap.get(category).isEmpty()){
             filemap.remove(category);
         }
