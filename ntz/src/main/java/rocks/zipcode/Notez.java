@@ -37,11 +37,12 @@ public final class Notez {
          * of method calls that manipulate the Notez engine.
          * See the first one:
          */
-        ntzEngine.loadDemoEntries();
+//        ntzEngine.loadDemoEntries();
         // TESTING
 //        argv = "-r \"Another note\"".split(" ");
 //        argv = "-c \"note2\" \"testing Notes\"".split(" ");
 //        argv = "-f \"note2\" 1".split(" ");
+//        argv = "-e \"General\" 1 \"replace\"".split(" ");
 
         if (argv.length == 0) { // there are no commandline arguments
             //just print the contents of the filemap.
@@ -61,6 +62,7 @@ public final class Notez {
             }
             else if(argv[0].equals("-e")){
                 // edit or replace a note
+                ntzEngine.editNote(argv[1], argv);
             }
             ntzEngine.printResults();
         }
@@ -107,7 +109,7 @@ public final class Notez {
      */
     private void removeFromCategory(String category, String[] argv) {
         // parse the argv first
-//        category = removeQuotes(category);
+        category = removeQuotes(category);
         int noteNumber = Integer.parseInt(argv[2]) - 1;
 
         // string is ready to be added to a note list
@@ -139,5 +141,22 @@ public final class Notez {
 
     private String removeQuotes(String in){
         return in.replace("\"", "");
+    }
+
+    private void editNote(String category, String[] argv) {
+        // parse the argv first
+        category = removeQuotes(category);
+        int noteNumber = Integer.parseInt(argv[2]) - 1;
+        String noteText = removeQuotes(parseNote(category, argv));
+
+        try {
+            // string is ready to be replacing a file
+            filemap.get(category).remove(noteNumber);
+            filemap.get(category).add(noteNumber, noteText);
+        }
+        catch (Exception e){
+            // got here bc you tried to delete something that don't exist
+//            System.out.println("ohno plz fix me");
+        }
     }
 }
