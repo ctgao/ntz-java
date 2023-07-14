@@ -21,7 +21,7 @@ public final class Notez {
         if (_debug) {
             System.err.print("Argv: [");
             for (String a : argv) {
-                System.err.print(a+" ");
+                System.err.print(a+", ");
             }
             System.err.println("]");
         }
@@ -47,6 +47,8 @@ public final class Notez {
         if (argv.length == 0) { // there are no commandline arguments
             //just print the contents of the filemap.
             ntzEngine.printResults();
+            // and print the help menu
+            ntzEngine.helpMenu();
         } else {
             if (argv[0].equals("-r")) {
                 ntzEngine.addToCategory("General", argv);
@@ -64,7 +66,7 @@ public final class Notez {
                 // edit or replace a note
                 ntzEngine.editNote(argv[1], argv);
             }
-            ntzEngine.printResults();
+//            ntzEngine.printResults();
         }
         /*
          * what other method calls do you need here to implement the other commands??
@@ -72,10 +74,23 @@ public final class Notez {
         ntzEngine.saveDatabase();
     }
 
+    private void helpMenu() {
+        System.out.println(" --- COMMANDS MENU --- ");
+        System.out.println("-r(emember in General) \"note contents\"");
+        System.out.println("-c(reate) \"category name\" \"note contents\"");
+        System.out.println("-f(orget) \"category name\" note-integer");
+        System.out.println("-e(dit) \"category name\" note-integer \"new note contents\"\n");
+    }
+
     private void addToCategory(String category, String[] argv) {
         // parse the argv first
-        String noteText = removeQuotes(parseNote(category, argv));
-        category = removeQuotes(category);
+        String noteText;
+        if(argv[0].equals("-r")){
+            noteText = parseNote(1, argv);
+        }
+        else { // creating the category maybe
+            noteText = parseNote(2, argv);
+        }
 
         // string is ready to be added to a note list
         if(!filemap.containsKey(category)){
@@ -109,7 +124,6 @@ public final class Notez {
      */
     private void removeFromCategory(String category, String[] argv) {
         // parse the argv first
-        category = removeQuotes(category);
         int noteNumber = Integer.parseInt(argv[2]) - 1;
 
         // string is ready to be added to a note list
@@ -119,35 +133,22 @@ public final class Notez {
         }
     }
 
-    private String parseNote(String category, String[] input){
+    private String parseNote(int startIndex, String[] input){
         // parse the argv first
         StringBuilder sb = new StringBuilder();
-        boolean quoteFound = false;
-        for(String s : input){
-            if(s.contains(category)){
-                continue;
-            }
-            quoteFound = (s.indexOf('\"') != -1) || quoteFound;
-            if(quoteFound){
-                sb.append(s);
-                sb.append(" ");
-            }
+        for(int i = startIndex; i < input.length; i++){
+            sb.append(input[i]);
+            sb.append(" ");
         }
-        // delete the extra space
-        sb.deleteCharAt(sb.lastIndexOf(" "));
+        String retVal = sb.toString();
 
-        return sb.toString();
-    }
-
-    private String removeQuotes(String in){
-        return in.replace("\"", "");
+        return retVal.substring(0, retVal.length() - 1);
     }
 
     private void editNote(String category, String[] argv) {
         // parse the argv first
-        category = removeQuotes(category);
         int noteNumber = Integer.parseInt(argv[2]) - 1;
-        String noteText = removeQuotes(parseNote(category, argv));
+        String noteText = parseNote(3, argv);
 
         try {
             // string is ready to be replacing a file
